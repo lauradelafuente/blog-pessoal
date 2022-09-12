@@ -32,7 +32,7 @@ public class PostagemController {
 		@Autowired //define quais Classes serão instanciadas e em quais lugares serão Injetadas quando houver necessidade, transefere responsabilidade para o repositório(injeção de dependencia)
 		private PostagemRepository postagemRepository;
 		
-		@Autowired 
+		@Autowired //insere uma injeção de dependência do recurso Tema.
 		private TemaRepository temaRepository;
 		
 		@GetMapping //indica que o Método getAll(), responderá a todas as requisições do tipo HTTP GET, enviadas no endereço http://localhost:8080/postagens/.
@@ -54,23 +54,24 @@ public class PostagemController {
 		
 		@PostMapping //indica que o Método post(Postagem postagem), responderá a todas as requisições do tipo HTTP POST
 		public ResponseEntity<Postagem> post(@Valid @RequestBody Postagem postagem) { //retornará a requisição/ @valid valida o objeto postagem conforme as regras em "Postagem" (notBlank)/ @RequestBody recebe o objeto postagem e insere no parâmetro Postagem do Método post.
-			if(temaRepository.existsById(postagem.getTema().getId()))
-				return ResponseEntity.status(HttpStatus.CREATED)
+			if(temaRepository.existsById(postagem.getTema().getId())) // exisitsBtId checa se o id passado existe; postagem.getTema().getId() obtém o id do tema
+				return ResponseEntity.status(HttpStatus.CREATED) //executa o método padrão dp JPA (save(postagem)), se existir e for persistido no db retorna como CREATED201
 						.body(postagemRepository.save(postagem));
 		
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); //se não existir será retornado BAD REQUEST 400; build() constrói a resposta HTTP como retornado.
 		}
 		
 		@PutMapping //indica que o Método put(Postagem postagem), responderá a todas as requisições do tipo HTTP PUT
 		public ResponseEntity<Postagem> put(@Valid @RequestBody Postagem postagem) { 
-			if(postagemRepository.existsById(postagem.getId())) {
-				if(temaRepository.existsById(postagem.getTema().getId()))
-					return ResponseEntity.status(HttpStatus.OK)
+			if(postagemRepository.existsById(postagem.getId())) {//exisitsBtId checa se o id passado em postagem existe, se nao existir é possivel atualizar
+				
+				if(temaRepository.existsById(postagem.getTema().getId())) //exisitsBtId checa se o id passado em tema existe; postagem.getTema().getId() obtém o id do tema
+					return ResponseEntity.status(HttpStatus.OK) //executa o método padrão dp JPA (save(postagem)), se existir e for persistido no db retorna como CREATED201
 							.body(postagemRepository.save(postagem));
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); //se o objeto tema não existir será retornado BAD REQUEST 400; build() constrói a resposta HTTP como retornado.
 			}
 			
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); ////se o objeto postagem não for encontrado será retornado NOT FOUND 404; build() constrói a resposta HTTP como retornado.
 		}
 		
 		@ResponseStatus(HttpStatus.NO_CONTENT) //indica que o Método delete(Long id), terá uma Response Status específica (HTTP Status NO_CONTENT 🡪 204)

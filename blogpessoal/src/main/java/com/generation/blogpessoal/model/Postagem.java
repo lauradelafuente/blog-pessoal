@@ -38,6 +38,10 @@ public class Postagem {
 	@JsonIgnoreProperties("postagem") //indica que uma parte do JSON será ignorado, o objeto tema será exibido como um sub objeto de postagem
 	private Tema tema; //Objeto da Classe Tema, que receberá os dados de Postagem, que representa a chave estrangeira tema_id em tb_postagens 
 
+	@ManyToOne
+	@JsonIgnoreProperties("postagem")
+	private Usuario usuario;
+
 	public Long getId() {
 		return id;
 	}
@@ -76,6 +80,14 @@ public class Postagem {
 
 	public void setTema(Tema tema) {
 		this.tema = tema;
+	}
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
 	}
 	
 }
