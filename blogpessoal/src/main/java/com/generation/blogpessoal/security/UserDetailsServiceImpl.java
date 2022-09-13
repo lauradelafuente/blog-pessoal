@@ -25,9 +25,9 @@ public class UserDetailsServiceImpl implements UserDetailsService { //A classe �
 		Optional<Usuario> usuario = usuarioRepository.findByUsuario(userName); //Busca por usuario(findBy); SELECT usuario FROM tb_usuarios = email@email.com
 		
 		if (usuario.isPresent()) //Verifica se já existe
-			return new UserDetailsImpl(usuario.get());
+			return new UserDetailsImpl(usuario.get()); //executa o construtor, passando o objeto usuario como parametro
 		else 
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN); 
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN); //se nao existir, será devolvido Status 403(Acesso Proibido)
 	}
 
 }
