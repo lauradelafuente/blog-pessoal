@@ -34,7 +34,7 @@ public class UsuarioRepositoryTest {
 	}
 	
 	@Test //indica que o método executará um teste
-	@DisplayName("Retorna 1 usuário")//configura uma mensagem que será exibida ao invés do nome do Método
+	@DisplayName("Retorna 1 usuário")//indica um nome de exibição para o teste no console do Junit
 	public void deveRetornarUmUsuario() {
 		Optional<Usuario> usuario = usuarioRepository.findByUsuario("joao@email.com.br");
 		assertTrue(usuario.get().getUsuario().equals("joao@email.com.br")); //verifica se o usuario foi encontrado, se sim retorna "aprovado", se não retorna "falhou"

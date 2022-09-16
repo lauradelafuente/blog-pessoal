@@ -26,13 +26,13 @@ import com.generation.blogpessoal.service.UsuarioService;
 public class UsuarioControllerTest {
 	
 	@Autowired
-	private TestRestTemplate testRestTemplate; //enviar as requisições para a aplicação
+	private TestRestTemplate testRestTemplate; //enviar as requisições para a aplicação (acesso aos verbos http)
 	
 	@Autowired 
-	private UsuarioService usuarioService; // persistie os objetos no Banco de dados de testes com a senha criptografada.
+	private UsuarioService usuarioService; // persistie os objetos no Banco de dados de testes (h2) com a senha criptografada.
 	
 	@Autowired 
-	private UsuarioRepository usuarioRepository;//limpa o Banco de dados de testes.
+	private UsuarioRepository usuarioRepository;//limpa o Banco de dados de testes e cadastra um usuario padrão 
 	
 	@BeforeAll
 	void start() { //apaga todos os dados da tabela e cri o usuário root@root
@@ -46,16 +46,16 @@ public class UsuarioControllerTest {
 	public void deveCriarUmUsuario() {
 		HttpEntity<Usuario> corpoRequisicao = new HttpEntity<Usuario>
 		(new Usuario(0L,"Paulo Antunes","paulo@email.com.br","13465278","https://i.imgur.com/JR7kUFU.jpg")); //equivalente ao POST: Transforma os Atributos num objeto da Classe Usuario
-		ResponseEntity<Usuario> corpoResposta = testRestTemplate.exchange //exchange envia a requisição HTTP e responseentity recebe a resposta
+		ResponseEntity<Usuario> corpoResposta = testRestTemplate.exchange //exchange envia a requisição HTTP e responseentity recebe a resposta, define a resposta do que foi "persistido" no db
 		("/usuarios/cadastrar",HttpMethod.POST,corpoRequisicao,Usuario.class); //parametros para enviar a requisição: URI(endpoint),método HTTP,Obj HttpEntity,ResponseBody(Usuario.class)
-		assertEquals(HttpStatus.CREATED,corpoResposta.getStatusCode()); //assertEquals checa se persiste no db;getBody faz o acesso a requisição e resposta 
-		assertEquals(corpoRequisicao.getBody().getNome(), corpoResposta.getBody().getNome());
+		assertEquals(HttpStatus.CREATED,corpoResposta.getStatusCode()); //verifica se o status http da resposta foi 201 Created
+		assertEquals(corpoRequisicao.getBody().getNome(), corpoResposta.getBody().getNome());//assertEquals checa se persiste no db;getBody faz o acesso a requisição e resposta 
 		assertEquals(corpoRequisicao.getBody().getUsuario(), corpoResposta.getBody().getUsuario());
 	}
 	
 	@Test
-	@DisplayName("Não deve permitir duplicação do Usuário")
-	public void naoDeveDuplicarUsuario() {
+	@DisplayName("Não deve permitir duplicação do usuário")
+	public void naoDeveDuplicarUsuario() { //cadastra dois usuarios iguais e espera a resposta BAD REQUEST
 		usuarioService.cadastrarUsuario(new Usuario //persiste um objeto no db
 			(0L,"Maria da Silva","maria_silva@email.com.br","13465278","https://i.imgur.com/T12NIp9.jpg"));
 		HttpEntity<Usuario> corpoRequisicao = new HttpEntity<Usuario> //cria a requisição
@@ -84,10 +84,10 @@ public class UsuarioControllerTest {
 	@Test
 	@DisplayName("Listar todos os Usuários")
 	public void deveMostrarTodosUsuarios() {
-		usuarioService.cadastrarUsuario(new Usuario(0L, 
-			"Sabrina Sanches", "sabrina_sanches@email.com.br", "sabrina123", "https://i.imgur.com/5M2p5Wb.jpg"));
-		usuarioService.cadastrarUsuario(new Usuario(0L, 
-			"Ricardo Marques", "ricardo_marques@email.com.br", "ricardo123", "https://i.imgur.com/Sk5SjWE.jpg"));
+		usuarioService.cadastrarUsuario(new Usuario
+			(0L,"Sabrina Sanches", "sabrina_sanches@email.com.br", "sabrina123", "https://i.imgur.com/5M2p5Wb.jpg"));
+		usuarioService.cadastrarUsuario(new Usuario
+			(0L,"Ricardo Marques", "ricardo_marques@email.com.br", "ricardo123", "https://i.imgur.com/Sk5SjWE.jpg"));
 		ResponseEntity<String> resposta = testRestTemplate
 			.withBasicAuth("root@root.com", "rootroot")
 			.exchange("/usuarios/all", HttpMethod.GET, null, String.class);
