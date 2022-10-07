@@ -33,7 +33,7 @@ public class UsuarioService {
 	private String gerarBasicToken(String usuario, String senha) {
 		String token = usuario + ":" + senha;
 		byte[] tokenBase64 = Base64.encodeBase64(token.getBytes(Charset.forName("US-ASCII")));
-		return "Basic" + new String(tokenBase64);
+		return "Basic " + new String(tokenBase64);
 	}
 	
 	public Optional<Usuario> cadastrarUsuario(Usuario usuario) { //verifica se o objeto já tem cadastro, criptografa a senha e manda o objeto para o db
